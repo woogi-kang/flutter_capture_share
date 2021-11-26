@@ -49,29 +49,18 @@ class DemoAppState extends State<DemoApp> {
                 children: <Widget>[
                   TextField(
                     decoration: const InputDecoration(
-                      labelText: 'Share text:',
-                      hintText: 'Enter some text and/or link to share',
+                      labelText: '공유 텍스트:',
                     ),
                     maxLines: 2,
                     onChanged: (String value) => setState(() {
                       text = value;
                     }),
                   ),
-                  TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Share subject:',
-                      hintText: 'Enter subject to share (optional)',
-                    ),
-                    maxLines: 2,
-                    onChanged: (String value) => setState(() {
-                      subject = value;
-                    }),
-                  ),
                   const Padding(padding: EdgeInsets.only(top: 12.0)),
                   ImagePreviews(imagePaths, onDelete: _onDeleteImage),
                   ListTile(
                     leading: const Icon(Icons.add),
-                    title: const Text('Add image'),
+                    title: const Text('이미지 불러오기'),
                     onTap: () async {
                       final imagePicker = ImagePicker();
                       final pickedFile = await imagePicker.pickImage(
@@ -91,7 +80,7 @@ class DemoAppState extends State<DemoApp> {
                         onPressed: text.isEmpty && imagePaths.isEmpty
                             ? null
                             : () => _onShare(context),
-                        child: const Text('Share'),
+                        child: const Text('공유'),
                       );
                     },
                   ),
