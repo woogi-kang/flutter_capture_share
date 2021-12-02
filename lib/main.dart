@@ -9,13 +9,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'image_previews.dart';
+import 'kakao_share_helper.dart';
 
 void main() {
+  KakaoContext.clientId = 'c93e39871656ed427af75eea5812d436';
+
   runApp(const DemoApp());
 }
 
@@ -96,6 +100,13 @@ class DemoAppState extends State<DemoApp> {
                   ElevatedButton(
                     onPressed:
                         () => _onCaptureSave(),
+                    child: const Text('캡쳐 후 카카오 공유'),
+                  ),
+
+                  const Padding(padding: EdgeInsets.only(top: 12.0)),
+                  ElevatedButton(
+                    onPressed:
+                        () => _onCaptureSave(),
                     child: const Text('캡쳐 후 저장'),
                   ),
                 ],
@@ -149,6 +160,45 @@ class DemoAppState extends State<DemoApp> {
           sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size);
     });
   }
+
+  void _onCaptureKakaoShare() {
+    screenshotController
+        .captureFromWidget(
+      Container(
+        width: 952 * 0.36,
+        height: 1350 * 0.36,
+        padding: const EdgeInsets.symmetric(vertical: 60 * 0.36, horizontal: 40 * 0.36),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.black),
+          borderRadius: const BorderRadius.all(Radius.circular(40 * 0.36)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("IT거래량 전략 | 포트폴리오", style: TextStyle(color: Colors.black, fontSize: 50 * 0.36),),
+            const SizedBox(height: 20 * 0.36),
+            const Text("성과평과 2020.1.1 ~ 2020.7.31", style: TextStyle(color: Colors.black, fontSize: 36 * 0.36),),
+
+            const SizedBox(height: 60 * 0.36),
+            ImagePreviews(imagePaths),
+          ],
+        ),
+      ),
+    )
+        .then((capturedImage) async {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = await File('${directory.path}/image.png').create();
+      await imagePath.writeAsBytes(capturedImage);
+
+      final result = await ImageGallerySaver.saveFile(imagePath.path);
+
+      KakaoShareManager share = KakaoShareManager();
+      share.shareMyCode();
+    });
+  }
+
+
 
   void _onCaptureSave() {
     screenshotController
